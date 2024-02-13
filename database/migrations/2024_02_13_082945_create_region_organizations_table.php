@@ -13,14 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('personal_access_tokens', function (Blueprint $table) {
+        Schema::create('region_organizations', function (Blueprint $table) {
             $table->id();
-            $table->morphs('tokenable');
-            $table->string('name');
-            $table->string('token', 64)->unique();
-            $table->text('abilities')->nullable();
-            $table->timestamp('last_used_at')->nullable();
+            $table->unsignedBigInteger('region_id');
+            $table->unsignedBigInteger('organization_id');
             $table->timestamps();
+
+            $table->foreign('region_id')->references('region_id')->on('regions');
+            $table->foreign('organization_id')->references('organization_id')->on('organizations');
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('personal_access_tokens');
+        Schema::dropIfExists('region_organizations');
     }
 };
