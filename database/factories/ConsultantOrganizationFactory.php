@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Region>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RegionOrganization>
  */
-class RegionFactoyFactory extends Factory
+class ConsultantOrganizationFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,8 @@ class RegionFactoyFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'consultant_id' => rand(1, 5),
+            'organization_id' => rand(1, 5),
         ];
     }
 }

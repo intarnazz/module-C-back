@@ -28,3 +28,7 @@ Route::get("/regions/{region}/organizations", [RegionController::class, 'organiz
 Route::post("/regions/{region}/organizations", [RegionController::class, 'getOrganizations']);
 Route::put("/regions/{region}/organizations/{organization}", [RegionController::class, 'changeOrganizations']);
 Route::delete("/regions/{region}/organizations/{organization}", [RegionController::class, 'deleteOrganizations']);
+Route::get("/regions/{region}/organizations/{organization}/consultants", [RegionController::class, 'ConsultantsOrganizations']);
+Route::post("/regions/{region}/organizations/{organization}/consultants", [RegionController::class, 'AddConsultants']);
+Route::put("/regions/{region}/organizations/{organization}/consultants/{consultant}", [RegionController::class, 'ChangeConsultant']);
+Route::delete("/regions/{region}/organizations/{organization}/consultants/{consultant}", [RegionController::class, 'DeleteConsultant']);

@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Organization>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RegionOrganization>
  */
-class OrganizationFactory extends Factory
+class RegionOrganizationFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,8 @@ class OrganizationFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->unique()->company(),
+            'region_id' => rand(1, 5),
+            'organization_id' => rand(1, 5),
         ];
     }
 }

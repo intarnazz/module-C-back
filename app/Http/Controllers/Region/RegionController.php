@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Region;
 use App\Models\RegionOrganization;
 use App\Models\Organization;
+use App\Models\ConsultantOrganization;
+use App\Models\Consultant;
 
 class RegionController extends Controller
 {
@@ -232,12 +234,281 @@ class RegionController extends Controller
         ->where('name', $organizationSave)
         ->first();
       if ($organization) {
-        $organization->delete();
-
+        $consultant_organization = ConsultantOrganization::all()
+          ->where('organization_id', $organization->organization_id)
+          ->first();
+        if ($consultant_organization) {
+          $res = [
+            'data' => [
+              'error' => 'Организация содержит консультантов'
+            ],
+            'status' => 'error',
+          ];
+          return response()->json($res)->setStatusCode(400);
+        }
+        $region_organization->delete();
+        $region_organization = RegionOrganization::all()
+          ->where('organization_id', $organization->organization_id)
+          ->first();
+        if (!$region_organization) {
+          $organization->delete();
+        }
         $res = [
           'status' => 'ok',
         ];
         return response()->json($res)->setStatusCode(200);
+      }
+    }
+    $res = [
+      'data' => [
+        'error' => 'Организация не найдена'
+      ],
+      'status' => 'error',
+    ];
+    return response()->json($res)->setStatusCode(404);
+  }
+  public function ConsultantsOrganizations($region, $organization, Request $request)
+  {
+    $region = Region::all()->where('name', $region)->first();
+    if (!$region) {
+      $res = [
+        'data' => [
+          'error' => 'Регион не найден'
+        ],
+        'status' => 'error',
+      ];
+      return response()->json($res)->setStatusCode(404);
+    }
+    $region_organizations = RegionOrganization::all()
+      ->where('region_id', $region->region_id);
+    if (!$region_organizations) {
+      $res = [
+        'data' => [
+          'error' => 'Организация не найдена'
+        ],
+        'status' => 'error',
+      ];
+      return response()->json($res)->setStatusCode(404);
+    }
+    $organizationSave = $organization;
+    foreach ($region_organizations as $region_organization) {
+      $organization = Organization::all()
+        ->where('organization_id', $region_organization->organization_id)
+        ->where('name', $organizationSave)
+        ->first();
+      if ($organization) {
+        $consultant_organizations = ConsultantOrganization::all()
+          ->where('organization_id', $organization->organization_id);
+        $res = [
+          'data' => [
+            'consultants' => []
+          ],
+          'status' => 'ok',
+        ];
+        foreach ($consultant_organizations as $consultant_organization) {
+          $consultant = Consultant::all()
+            ->where('consultant_id', $consultant_organization->consultant_id)
+            ->first();
+          $res['data']['consultants'][] = $consultant;
+        }
+        return response()->json($res)->setStatusCode(200);
+      }
+    }
+    $res = [
+      'data' => [
+        'error' => 'Организация не найдена'
+      ],
+      'status' => 'error',
+    ];
+    return response()->json($res)->setStatusCode(404);
+  }
+  public function AddConsultants($region, $organization, Request $request)
+  {
+    $region = Region::all()->where('name', $region)->first();
+    if (!$region) {
+      $res = [
+        'data' => [
+          'error' => 'Регион не найден'
+        ],
+        'status' => 'error',
+      ];
+      return response()->json($res)->setStatusCode(404);
+    }
+    $region_organizations = RegionOrganization::all()
+      ->where('region_id', $region->region_id);
+    if (!$region_organizations) {
+      $res = [
+        'data' => [
+          'error' => 'Организация не найдена'
+        ],
+        'status' => 'error',
+      ];
+      return response()->json($res)->setStatusCode(404);
+    }
+    $organizationSave = $organization;
+    foreach ($region_organizations as $region_organization) {
+      $organization = Organization::all()
+        ->where('organization_id', $region_organization->organization_id)
+        ->where('name', $organizationSave)
+        ->first();
+      if ($organization) {
+        $consultant = new Consultant();
+        $consultant->firstname = $request->firstname;
+        $consultant->lastname = $request->lastname;
+        $consultant->email = $request->email;
+        $consultant->password = $request->password;
+        $consultant->save();
+
+        $consultant_organization = new ConsultantOrganization();
+        $consultant_organization->consultant_id = $consultant->consultant_id;
+        $consultant_organization->organization_id = $organization->organization_id;
+        $consultant_organization->save();
+
+        $res = [
+          'data' => [
+            'consultant' => $consultant
+          ],
+          'status' => 'ok',
+        ];
+        return response()->json($res)->setStatusCode(201);
+      }
+    }
+    $res = [
+      'data' => [
+        'error' => 'Организация не найдена'
+      ],
+      'status' => 'error',
+    ];
+    return response()->json($res)->setStatusCode(404);
+  }
+  public function ChangeConsultant($region, $organization, $consultant, Request $request)
+  {
+    $region = Region::all()->where('name', $region)->first();
+    if (!$region) {
+      $res = [
+        'data' => [
+          'error' => 'Регион не найден'
+        ],
+        'status' => 'error',
+      ];
+      return response()->json($res)->setStatusCode(404);
+    }
+    $region_organizations = RegionOrganization::all()
+      ->where('region_id', $region->region_id);
+    if (!$region_organizations) {
+      $res = [
+        'data' => [
+          'error' => 'Организация не найдена'
+        ],
+        'status' => 'error',
+      ];
+      return response()->json($res)->setStatusCode(404);
+    }
+    $organizationSave = $organization;
+    foreach ($region_organizations as $region_organization) {
+      $organization = Organization::all()
+        ->where('organization_id', $region_organization->organization_id)
+        ->where('name', $organizationSave)
+        ->first();
+      if ($organization) {
+        $consultant_organizations = ConsultantOrganization::all()
+          ->where('organization_id', $organization->organization_id);
+        $consultantEmail = $consultant;
+        foreach ($consultant_organizations as $consultant_organization) {
+          $consultant = Consultant::all()
+            ->where('consultant_id', $consultant_organization->consultant_id)
+            ->first();
+          if ($consultant->email == $consultantEmail) {
+            $consultant->firstname = $request->firstname;
+            $consultant->lastname = $request->lastname;
+            $consultant->email = $request->email;
+            $consultant->password = $request->password;
+            $consultant->save();
+
+            $res = [
+              'data' => [
+                'consultant' => $consultant
+              ],
+              'status' => 'ok',
+            ];
+            return response()->json($res)->setStatusCode(200);
+          }
+        }
+        $res = [
+          'data' => [
+            'error' => 'Консультант не найден'
+          ],
+          'status' => 'error',
+        ];
+        return response()->json($res)->setStatusCode(404);
+      }
+    }
+    $res = [
+      'data' => [
+        'error' => 'Организация не найдена'
+      ],
+      'status' => 'error',
+    ];
+    return response()->json($res)->setStatusCode(404);
+  }
+  public function DeleteConsultant($region, $organization, $consultant, Request $request)
+  {
+    $region = Region::all()->where('name', $region)->first();
+    if (!$region) {
+      $res = [
+        'data' => [
+          'error' => 'Регион не найден'
+        ],
+        'status' => 'error',
+      ];
+      return response()->json($res)->setStatusCode(404);
+    }
+    $region_organizations = RegionOrganization::all()
+      ->where('region_id', $region->region_id);
+    if (!$region_organizations) {
+      $res = [
+        'data' => [
+          'error' => 'Организация не найдена'
+        ],
+        'status' => 'error',
+      ];
+      return response()->json($res)->setStatusCode(404);
+    }
+    $organizationSave = $organization;
+    foreach ($region_organizations as $region_organization) {
+      $organization = Organization::all()
+        ->where('organization_id', $region_organization->organization_id)
+        ->where('name', $organizationSave)
+        ->first();
+      if ($organization) {
+        $consultant_organizations = ConsultantOrganization::all()
+          ->where('organization_id', $organization->organization_id);
+        $consultantEmail = $consultant;
+        foreach ($consultant_organizations as $consultant_organization) {
+          $consultant = Consultant::all()
+            ->where('consultant_id', $consultant_organization->consultant_id)
+            ->first();
+          if ($consultant->email == $consultantEmail) {
+            $consultant_organization->delete();
+            $consultant_organization = ConsultantOrganization::all()
+              ->where('consultant_id', $consultant->consultant_id)
+              ->first();
+            if (!$region_organization) {
+              $consultant->delete();
+            }
+            $res = [
+              'status' => 'ok',
+            ];
+            return response()->json($res)->setStatusCode(200);
+          }
+        }
+        $res = [
+          'data' => [
+            'error' => 'Консультант не найден'
+          ],
+          'status' => 'error',
+        ];
+        return response()->json($res)->setStatusCode(404);
       }
     }
     $res = [
