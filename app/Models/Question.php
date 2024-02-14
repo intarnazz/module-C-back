@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Categori extends Model
+class Question extends Model
 {
     use HasFactory;
-    protected $primaryKey = 'categori_id';
+    protected $primaryKey = 'question_id';
 }

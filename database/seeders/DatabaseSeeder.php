@@ -20,5 +20,8 @@ class DatabaseSeeder extends Seeder
         \App\Models\Region::factory(5)->create();
         \App\Models\RegionOrganization::factory(5)->create();
         \App\Models\ConsultantOrganization::factory(5)->create();
+        \App\Models\Categori::factory(5)->create();
+        \App\Models\Question::factory(5)->create();
+        \App\Models\Consultation::factory(5)->create();
     }
 }
