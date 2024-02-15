@@ -44,3 +44,5 @@ Route::put("/categories/{category}/problems/{problem}", [CategoriController::cla
 Route::delete("/categories/{category}/problems/{problem}", [CategoriController::class, 'deleteProblems']);
 Route::get("/consultations", [ConsultationController::class, 'getAll']);
 Route::get("/consultations/{consultation}", [ConsultationController::class, 'get']);
+Route::post("/consultations", [ConsultationController::class, 'add']);
+Route::patch("/consultations/{consultation}", [ConsultationController::class, 'rating']);

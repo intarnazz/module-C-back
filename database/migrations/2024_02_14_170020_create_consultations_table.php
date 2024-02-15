@@ -15,13 +15,23 @@ return new class extends Migration
     {
         Schema::create('consultations', function (Blueprint $table) {
             $table->id('consultation_id');
+            $table->string('firstname')->nullable();
+            $table->string('lastname')->nullable();
+            $table->string('email')->nullable();
+            $table->string('tel')->nullable();
+            $table->string('kid')->nullable();
+            $table->string('age')->nullable();
+            $table->string('code')->nullable();
+            $table->string('rejection')->nullable();
+            $table->string('result')->nullable();
+            $table->string('advice')->nullable();
             $table->unsignedBigInteger('region_id');
             $table->unsignedBigInteger('organization_id');
             $table->unsignedBigInteger('consultant_id');
             $table->unsignedBigInteger('categori_id');
             $table->unsignedBigInteger('question_id');
-            $table->dateTime('dateFrom');
-            $table->dateTime('dateTo');
+            $table->dateTime('dateFrom')->nullable();
+            $table->dateTime('dateTo')->nullable();
             $table->string('status')->nullable();
             $table->timestamps();
 
